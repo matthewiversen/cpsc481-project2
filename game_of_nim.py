@@ -12,25 +12,43 @@ class GameOfNim(Game):
             for match_amount in range(1, board[row] + 1):
                 moves.append((row, match_amount))
         
-        self.initial = GameState(to_move='MAX', utility=0, board=board, moves=moves)
+        self.state = GameState(to_move='MAX', utility=0, board=board, moves=moves)
+
+
+    def result(self, state, move):
+        """Updates and returns state based on the given move"""
+
+        row_to_update = move[0]
+        matches_to_remove = move[1]
+
+        # removed the matches based on the give move
+        state.board[row_to_update] -= matches_to_remove
+
+        # calculate new moves
+        new_moves = []
+        for row in range(len(state.board)):
+            for match_amount in range(1, state.board[row] + 1):
+                new_moves.append((row, match_amount))
+                
+        return GameState(to_move=('MAX' if state.to_move == "MIN" else "MIN"), utility=0, board=state.board, moves=new_moves)
+
 
     def actions(self, state):
         """Legal moves are at least one object, all from the same row."""
         return state.moves
 
-    def result(self, state, move):
-        pass
-        # raise NotImplementedError
 
     def utility(self, state, player):
         """Return the value to player; 1 for win, -1 for loss, 0 otherwise."""
         pass
         # raise NotImplementedError
 
+
     def terminal_test(self, state):
         """A state is terminal if there are no objects left"""
         pass
         # raise NotImplementedError
+
 
     def display(self, state):
         board = state.board
@@ -41,10 +59,15 @@ if __name__ == "__main__":
     nim = GameOfNim(board=[0, 5, 3, 1]) # Creating the game instance
     #nim = GameOfNim(board=[7, 5, 3, 1]) # a much larger tree to search
 
-    print(nim.initial.board) # must be [0, 5, 3, 1]
-    print(nim.initial.moves) # must be [(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (2, 1), (2, 2), (2, 3), (3, 1)]
+    nim.display(nim.state) # must be [0, 5, 3, 1]
+    print("available moves:", nim.actions(nim.state)) # must be [(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (2, 1), (2, 2), (2, 3), (3, 1)]
     
-    
+
+    print(nim.state)
+    nim.state = nim.result(nim.state, (2,2))
+    # nim.actions = 
+    print(nim.state)
+        
     # print(nim.result(nim.initial, (1,3) ))
 
     # utility = nim.play_game(alpha_beta_player, query_player) # computer moves first 
