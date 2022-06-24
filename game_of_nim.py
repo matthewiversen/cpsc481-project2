@@ -12,7 +12,7 @@ class GameOfNim(Game):
             for match_amount in range(1, board[row] + 1):
                 moves.append((row, match_amount))
         
-        self.state = GameState(to_move='MAX', utility=0, board=board, moves=moves)
+        self.initial = GameState(to_move='MAX', utility=0, board=board, moves=moves)
 
 
     def result(self, state, move):
@@ -29,8 +29,11 @@ class GameOfNim(Game):
         for row in range(len(state.board)):
             for match_amount in range(1, state.board[row] + 1):
                 new_moves.append((row, match_amount))
-                
-        return GameState(to_move=('MAX' if state.to_move == "MIN" else "MIN"), utility=0, board=state.board, moves=new_moves)
+
+        return GameState(to_move=('MAX' if state.to_move == "MIN" else "MIN"),
+                        utility=self.utility(state, self.to_move), 
+                        board=state.board, 
+                        moves=new_moves)
 
 
     def actions(self, state):
@@ -38,40 +41,73 @@ class GameOfNim(Game):
         return state.moves
 
 
+    # note sure why this function would need state???
     def utility(self, state, player):
         """Return the value to player; 1 for win, -1 for loss, 0 otherwise."""
-        pass
-        # raise NotImplementedError
+
+        if player == "MAX":
+            return 1
+        elif player == "MIN":
+            return -1 
+        else:
+            return 0
 
 
     def terminal_test(self, state):
         """A state is terminal if there are no objects left"""
-        pass
-        # raise NotImplementedError
+
+        s = sum(state.board)
+        if s == 0:
+            return True
+        else:
+            return False
 
 
     def display(self, state):
+        """Display the board"""
+
         board = state.board
         print("board: ", board)
 
 
+    def to_move(self, state):
+        """Return the player whose move it is in this state."""
+
+        return state.to_move
+
+
 if __name__ == "__main__":
+
     nim = GameOfNim(board=[0, 5, 3, 1]) # Creating the game instance
     #nim = GameOfNim(board=[7, 5, 3, 1]) # a much larger tree to search
 
-    nim.display(nim.state) # must be [0, 5, 3, 1]
-    print("available moves:", nim.actions(nim.state)) # must be [(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (2, 1), (2, 2), (2, 3), (3, 1)]
+    # display board
+    # nim.display(nim.initial) 
+    
+    # prints availble moves
+    # print("available moves:", nim.actions(nim.initial))
+    
+    # some test turns
+    # print(nim.initial)
+    # nim.initial = nim.result(nim.initial, (2,3))
+    # print(nim.initial)
+    # nim.initial = nim.result(nim.initial, (1,5))
+    # print(nim.initial)
+    # nim.state = nim.result(nim.state, (3,1))
+    # print(nim.state)
+
+    # gets the utility, use after determining that the game is done
+    # print(nim.utility(nim.initial, nim.initial.to_move))
+
+    # check if the board is empty
+    # print(nim.terminal_test(nim.initial))
+        
     
 
-    print(nim.state)
-    nim.state = nim.result(nim.state, (2,2))
-    # nim.actions = 
-    print(nim.state)
-        
-    # print(nim.result(nim.initial, (1,3) ))
-
-    # utility = nim.play_game(alpha_beta_player, query_player) # computer moves first 
-    # if (utility < 0):
-    #     print("MIN won the game")
-    # else:
-    #     print("MAX won the game")
+    print(nim.initial)
+    print()
+    utility = nim.play_game(alpha_beta_player, query_player) # computer moves first 
+    if (utility < 0):
+        print("MIN won the game")
+    else:
+        print("MAX won the game")

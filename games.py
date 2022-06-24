@@ -257,6 +257,8 @@ class Game:
             for player in players:
                 move = player(self, state)
                 state = self.result(state, move)
+                print("Move: ", move, "State:", state)  # added
+                print("State:", state)                  # added
                 if self.terminal_test(state):
                     self.display(state)
                     return self.utility(state, self.to_move(self.initial))
