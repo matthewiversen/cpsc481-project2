@@ -1,4 +1,5 @@
 from games import *
+import copy
 
 class GameOfNim(Game):
     """Play Game of Nim with first player 'MAX'.
@@ -21,8 +22,11 @@ class GameOfNim(Game):
         row_to_update = move[0]
         matches_to_remove = move[1]
 
-        # removed the matches based on the give move
-        state.board[row_to_update] -= matches_to_remove
+        # create a new board of the new state, because state is a tuple which is unchangable
+        new_board = state.board.copy()
+
+        # remove the matches based on the given move
+        new_board[row_to_update] -= matches_to_remove
 
         # calculate new moves
         new_moves = []
@@ -30,9 +34,9 @@ class GameOfNim(Game):
             for match_amount in range(1, state.board[row] + 1):
                 new_moves.append((row, match_amount))
 
-        return GameState(to_move=('MAX' if state.to_move == "MIN" else "MIN"),
+        return GameState(to_move=("MAX" if state.to_move == "MIN" else "MIN"),
                         utility=self.utility(state, self.to_move), 
-                        board=state.board, 
+                        board=new_board, 
                         moves=new_moves)
 
 
@@ -41,23 +45,17 @@ class GameOfNim(Game):
         return state.moves
 
 
-    # note sure why this function would need state???
     def utility(self, state, player):
         """Return the value to player; 1 for win, -1 for loss, 0 otherwise."""
-
-        if player == "MAX":
-            return 1
-        elif player == "MIN":
-            return -1 
+        if self.terminal_test(state):
+            return (1 if player == "MAX" else 0)
         else:
             return 0
 
 
     def terminal_test(self, state):
         """A state is terminal if there are no objects left"""
-
-        s = sum(state.board)
-        if s == 0:
+        if sum(state.board) == 0:
             return True
         else:
             return False
