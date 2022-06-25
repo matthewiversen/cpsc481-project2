@@ -30,8 +30,8 @@ class GameOfNim(Game):
 
         # calculate new moves
         new_moves = []
-        for row in range(len(state.board)):
-            for match_amount in range(1, state.board[row] + 1):
+        for row in range(len(new_board)):
+            for match_amount in range(1, new_board[row] + 1):
                 new_moves.append((row, match_amount))
 
         return GameState(to_move=("MAX" if state.to_move == "MIN" else "MIN"),
@@ -48,7 +48,7 @@ class GameOfNim(Game):
     def utility(self, state, player):
         """Return the value to player; 1 for win, -1 for loss, 0 otherwise."""
         if self.terminal_test(state):
-            return (1 if player == "MAX" else 0)
+            return (1 if player == "MAX" else -1)
         else:
             return 0
 
