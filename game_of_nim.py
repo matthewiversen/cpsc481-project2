@@ -21,7 +21,7 @@ class GameOfNim(Game):
         row_to_update = move[0]
         matches_to_remove = move[1]
 
-        # removed the matches based on the give move
+        # removed the matches based on the given move
         state.board[row_to_update] -= matches_to_remove
 
         # calculate new moves
@@ -29,9 +29,10 @@ class GameOfNim(Game):
         for row in range(len(state.board)):
             for match_amount in range(1, state.board[row] + 1):
                 new_moves.append((row, match_amount))
-
+        
         print(state)
-        print(move)
+        print(new_moves)
+        print()
 
         return GameState(to_move=('MAX' if state.to_move == "MIN" else "MIN"),
                         utility=self.utility(state, self.to_move), 
@@ -44,23 +45,29 @@ class GameOfNim(Game):
         return state.moves
 
 
-    # note sure why this function would need state???
     def utility(self, state, player):
         """Return the value to player; 1 for win, -1 for loss, 0 otherwise."""
 
-        if player == "MAX":
-            return 1
-        elif player == "MIN":
-            return -1 
-        else:
-            return 0
+        if self.terminal_test(state):
+            if player == "MAX":
+                return 1
+            elif player == "MIN":
+                return -1 
+            else:
+                return 0
 
 
     def terminal_test(self, state):
         """A state is terminal if there are no objects left"""
 
-        s = sum(state.board)
-        if s <= 0:
+        # s = sum(state.board)
+        # if s <= 0:
+        #     return True
+        # else:
+        #     return False
+
+        if len(state.moves) == 0:
+            print("End of the game has been detected!!!")
             return True
         else:
             return False
@@ -83,6 +90,10 @@ if __name__ == "__main__":
 
     nim = GameOfNim(board=[0, 5, 3, 1]) # Creating the game instance
     #nim = GameOfNim(board=[7, 5, 3, 1]) # a much larger tree to search
+
+    print(nim.initial.board) # must be [0,5,3,1] - CORRECT
+    print(nim.initial.moves) # must be [(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (2, 1), (2, 2), (2, 3), (3, 1)] - CORRECT
+    print(nim.result(nim.initial, (1,3))) # CORRECT
 
     # display board
     # nim.display(nim.initial) 
