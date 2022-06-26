@@ -1,5 +1,4 @@
 from games import *
-import copy
 
 class GameOfNim(Game):
     """Play Game of Nim with first player 'MAX'.
@@ -35,30 +34,33 @@ class GameOfNim(Game):
                 new_moves.append((row, match_amount))
 
         return GameState(to_move=("MAX" if state.to_move == "MIN" else "MIN"),
-                        utility=self.utility(state, self.to_move), 
+                        utility=self.utility(state, state.to_move), 
                         board=new_board, 
                         moves=new_moves)
 
 
     def actions(self, state):
         """Legal moves are at least one object, all from the same row."""
+        
         return state.moves
 
 
     def utility(self, state, player):
         """Return the value to player; 1 for win, -1 for loss, 0 otherwise."""
+
         if self.terminal_test(state):
-            return (1 if player == "MAX" else -1)
+            return (1 if state.to_move == "MAX" else -1)
         else:
             return 0
 
 
     def terminal_test(self, state):
         """A state is terminal if there are no objects left"""
-        if sum(state.board) == 0:
+        
+        if len(state.moves) == 0:
             return True
         else:
-            return False
+            return
 
 
     def display(self, state):
@@ -77,33 +79,7 @@ class GameOfNim(Game):
 if __name__ == "__main__":
 
     nim = GameOfNim(board=[0, 5, 3, 1]) # Creating the game instance
-    #nim = GameOfNim(board=[7, 5, 3, 1]) # a much larger tree to search
 
-    # display board
-    # nim.display(nim.initial) 
-    
-    # prints availble moves
-    # print("available moves:", nim.actions(nim.initial))
-    
-    # some test turns
-    # print(nim.initial)
-    # nim.initial = nim.result(nim.initial, (2,3))
-    # print(nim.initial)
-    # nim.initial = nim.result(nim.initial, (1,5))
-    # print(nim.initial)
-    # nim.state = nim.result(nim.state, (3,1))
-    # print(nim.state)
-
-    # gets the utility, use after determining that the game is done
-    # print(nim.utility(nim.initial, nim.initial.to_move))
-
-    # check if the board is empty
-    # print(nim.terminal_test(nim.initial))
-        
-    
-
-    print(nim.initial)
-    print()
     utility = nim.play_game(alpha_beta_player, query_player) # computer moves first 
     if (utility < 0):
         print("MIN won the game")
