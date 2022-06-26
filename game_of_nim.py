@@ -21,27 +21,31 @@ class GameOfNim(Game):
         row_to_update = move[0]
         matches_to_remove = move[1]
 
-        # removed the matches based on the given move
-        state.board[row_to_update] -= matches_to_remove
+        # create a new board of the new state, because state is a tuple which is unchangable
+        new_board = state.board.copy()
+
+        # remove the matches based on the given move
+        new_board[row_to_update] -= matches_to_remove
 
         # calculate new moves
         new_moves = []
-        for row in range(len(state.board)):
-            for match_amount in range(1, state.board[row] + 1):
+        for row in range(len(new_board)):
+            for match_amount in range(1, new_board[row] + 1):
                 new_moves.append((row, match_amount))
         
         print(state)
         print(new_moves)
         print()
 
-        return GameState(to_move=('MAX' if state.to_move == "MIN" else "MIN"),
-                        utility=self.utility(state, self.to_move), 
-                        board=state.board, 
+        return GameState(to_move=("MAX" if state.to_move == "MIN" else "MIN"),
+                        utility=self.utility(state, state.to_move), 
+                        board=new_board, 
                         moves=new_moves)
 
 
     def actions(self, state):
         """Legal moves are at least one object, all from the same row."""
+        
         return state.moves
 
 
@@ -49,28 +53,18 @@ class GameOfNim(Game):
         """Return the value to player; 1 for win, -1 for loss, 0 otherwise."""
 
         if self.terminal_test(state):
-            if player == "MAX":
-                return 1
-            elif player == "MIN":
-                return -1 
-            else:
-                return 0
+            return (1 if state.to_move == "MAX" else -1)
+        else:
+            return 0
 
 
     def terminal_test(self, state):
         """A state is terminal if there are no objects left"""
-
-        # s = sum(state.board)
-        # if s <= 0:
-        #     return True
-        # else:
-        #     return False
-
+        
         if len(state.moves) == 0:
-            print("End of the game has been detected!!!")
             return True
         else:
-            return False
+            return
 
             
     def display(self, state):
@@ -89,37 +83,7 @@ class GameOfNim(Game):
 if __name__ == "__main__":
 
     nim = GameOfNim(board=[0, 5, 3, 1]) # Creating the game instance
-    #nim = GameOfNim(board=[7, 5, 3, 1]) # a much larger tree to search
 
-    print(nim.initial.board) # must be [0,5,3,1] - CORRECT
-    print(nim.initial.moves) # must be [(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (2, 1), (2, 2), (2, 3), (3, 1)] - CORRECT
-    print(nim.result(nim.initial, (1,3))) # CORRECT
-
-    # display board
-    # nim.display(nim.initial) 
-    
-    # prints availble moves
-    # print("available moves:", nim.actions(nim.initial))
-    
-    # some test turns
-    # print(nim.initial)
-    # nim.initial = nim.result(nim.initial, (2,3))
-    # print(nim.initial)
-    # nim.initial = nim.result(nim.initial, (1,5))
-    # print(nim.initial)
-    # nim.state = nim.result(nim.state, (3,1))
-    # print(nim.state)
-
-    # gets the utility, use after determining that the game is done
-    # print(nim.utility(nim.initial, nim.initial.to_move))
-
-    # check if the board is empty
-    # print(nim.terminal_test(nim.initial))
-        
-    
-
-    # print(nim.initial)
-    print()
     utility = nim.play_game(alpha_beta_player, query_player) # computer moves first 
     if (utility < 0):
         print("MIN won the game")
