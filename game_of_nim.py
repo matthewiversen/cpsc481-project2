@@ -32,10 +32,6 @@ class GameOfNim(Game):
         for row in range(len(new_board)):
             for match_amount in range(1, new_board[row] + 1):
                 new_moves.append((row, match_amount))
-        
-        print(state)
-        print(new_moves)
-        print()
 
         return GameState(to_move=("MAX" if state.to_move == "MIN" else "MIN"),
                         utility=self.utility(state, state.to_move), 
@@ -66,7 +62,7 @@ class GameOfNim(Game):
         else:
             return
 
-            
+
     def display(self, state):
         """Display the board"""
 
